@@ -1,0 +1,299 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model centrodecustos {
+  Id              Int       @id @default(autoincrement())
+  NmCentroDeCusto String?
+  IdEmpresa       Int?
+  Situacao        String?   @default("Ativo")
+  empresas        empresas? @relation(fields: [IdEmpresa], references: [Id])
+  dados           dados[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model empresas {
+  Id               Int                @id @default(autoincrement())
+  CNPJ             String?            @unique
+  NmEmpresa        String?
+  NmFantasia       String?
+  Endereco         String?
+  CEP              String?
+  Situacao         String?            @default("Ativa")
+  Tipo             String?
+  centrodecustos   centrodecustos[]
+  dados            dados[]
+  economia         economia[]
+  escalas          escalas[]
+  operadoras       operadoras[]
+  pedidos          pedidos[]
+  tiposocorrencias tiposocorrencias[]
+}
+
+model operadoras {
+  Id                 Int                  @id @default(autoincrement())
+  NmOperadora        String?
+  IdEmpresa          Int?
+  UF                 String?
+  empresas           empresas?            @relation(fields: [IdEmpresa], references: [Id])
+  detalhepedidos_old detalhepedidos_old[]
+  passagens          passagens[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model usuarios {
+  Id    Int     @id @default(autoincrement())
+  CPF   String? @unique
+  Nome  String?
+  Senha String?
+  Email String? @unique
+  Lvl   String? @default("0")
+}
+
+model dados {
+  Id                 Int                  @id @default(autoincrement())
+  NmColaborador      String?
+  CPF                String?              @unique
+  IdEmpresa          Int?
+  DtNascimento       String?
+  IdCentroDeCusto    Int?
+  Matricula          String?
+  IdEscala           Int?
+  Situacao           String?              @default("Ativo")
+  centrodecustos     centrodecustos?      @relation(fields: [IdCentroDeCusto], references: [Id])
+  empresas           empresas?            @relation(fields: [IdEmpresa], references: [Id])
+  escalas            escalas?             @relation(fields: [IdEscala], references: [Id])
+  detalhepedidos_old detalhepedidos_old[]
+  meurh              meurh[]
+  meurhrespostas     meurhrespostas[]
+  solicitacoes       solicitacoes[]
+  suporte            suporte[]
+
+  @@index([IdCentroDeCusto], name: "IdCentroDeCusto")
+  @@index([IdEmpresa], name: "IdEmpresa")
+  @@index([IdEscala], name: "IdEscala")
+}
+
+model passagens {
+  Id          Int         @id @default(autoincrement())
+  CPF         String?
+  NrCartao    String?
+  Valor       Float?
+  IdOperadora Int?
+  QtdDia      Int?
+  Situacao    String?     @default("Ativa")
+  operadoras  operadoras? @relation(fields: [IdOperadora], references: [Id])
+
+  @@index([IdOperadora], name: "IdOperadora")
+}
+
+model escalas {
+  Id                 Int                  @id @default(autoincrement())
+  IdEmpresa          Int?
+  NmEscala           String?
+  Folgas             String?
+  empresas           empresas?            @relation(fields: [IdEmpresa], references: [Id])
+  dados              dados[]
+  detalhepedidos_old detalhepedidos_old[]
+  escalascompetencia escalascompetencia[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model meurh {
+  Id                 Int              @id @default(autoincrement())
+  Protocolo          String?
+  CPF                String?
+  DtTicketAbertura   DateTime?
+  DtTicketFechamento DateTime?
+  Assunto            String?
+  Msg                String?
+  Status             String?          @default("Em Aberto")
+  dados              dados?           @relation(fields: [CPF], references: [CPF])
+  meurhhistorico     meurhhistorico[]
+
+  @@index([CPF], name: "CPF")
+}
+
+model ocorrencias {
+  Id               Int               @id @default(autoincrement())
+  CPF              String?
+  IdTipoOcorrencia Int?
+  DtOcorrencia     DateTime?
+  tiposocorrencias tiposocorrencias? @relation(fields: [IdTipoOcorrencia], references: [Id])
+
+  @@index([IdTipoOcorrencia], name: "IdTipoOcorrencia")
+}
+
+model tiposocorrencias {
+  Id            Int           @id @default(autoincrement())
+  NmOcorrencia  String?
+  DescBeneficio Boolean?
+  IdEmpresa     Int?
+  Descricao     String?
+  empresas      empresas?     @relation(fields: [IdEmpresa], references: [Id])
+  ocorrencias   ocorrencias[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model escalascompetencia {
+  Id          Int      @id @default(autoincrement())
+  IdEscalas   Int?
+  Competencia String?
+  QtdUteis    Int?
+  QtdFolgas   Int?
+  escalas     escalas? @relation(fields: [IdEscalas], references: [Id])
+
+  @@index([IdEscalas], name: "IdEscalas")
+}
+
+model meurhhistorico {
+  Id          Int       @id @default(autoincrement())
+  IdMeuRh     Int?
+  StatusAtual String?
+  StatusNovo  String?
+  DtAlteracao DateTime?
+  meurh       meurh?    @relation(fields: [IdMeuRh], references: [Id])
+
+  @@index([IdMeuRh], name: "IdMeuRh")
+}
+
+model suporte {
+  Id                 Int                @id @default(autoincrement())
+  Protocolo          String?
+  CPF                String?
+  DtTicketAbertura   DateTime           @default(now())
+  DtTicketFechamento DateTime?
+  Assunto            String?
+  Msg                String?
+  Avaliacao          Int?               @default(0)
+  Status             String?            @default("Em Aberto")
+  dados              dados?             @relation(fields: [CPF], references: [CPF])
+  suportehistorico   suportehistorico[]
+
+  @@index([CPF], name: "CPF")
+}
+
+model suportehistorico {
+  Id          Int       @id @default(autoincrement())
+  IdSuporte   Int?
+  StatusAtual String?
+  StatusNovo  String?
+  DtAlteracao DateTime?
+  Msg         String?
+  suporte     suporte?  @relation(fields: [IdSuporte], references: [Id])
+
+  @@index([IdSuporte], name: "IdSuporte")
+}
+
+model meurhrespostas {
+  Id         Int       @id @default(autoincrement())
+  IdMeuRh    Int?
+  DtResposta DateTime?
+  CPF        String?
+  Msg        String?
+  dados      dados?    @relation(fields: [CPF], references: [CPF])
+
+  @@index([CPF], name: "CPF")
+}
+
+model notification {
+  Id         Int      @id @default(autoincrement())
+  CPF        String?
+  Msg        String?
+  lido       Boolean?
+  created_at DateTime @default(now())
+}
+
+model pedidos {
+  Id                 Int                  @id @default(autoincrement())
+  IdEmpresa          Int?
+  Competencia        String?
+  DtInicialFolgas    DateTime?
+  DtFinalFolgas      DateTime?
+  DtInicialFaltas    DateTime?
+  DtFinalFaltas      DateTime?
+  Status             String?              @default("Inicio Proc. Compra")
+  empresas           empresas?            @relation(fields: [IdEmpresa], references: [Id])
+  detalhepedidos_old detalhepedidos_old[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model detalhepedidos {
+  Id             Int     @id @default(autoincrement())
+  IdPedido       Int?
+  NmColaborador  String?
+  CPF            String?
+  NrCartao       String?
+  IdOperadora    Int?
+  NmOperadora    String?
+  ValorDia       Float?
+  NmEscala       String?
+  QtdOcorrencias Int?
+  QtdFolgas      Int?
+  QtdDias        Int?
+  QtdDiasUteis   Int?
+  Valor          Float?
+  Valor_Total    Float?
+  MemoriaCalculo String?
+}
+
+model detalhepedidos_old {
+  Id             Int         @id @default(autoincrement())
+  IdPedido       Int?
+  NmColaborador  String?
+  CPF            String?
+  NrCartao       String?
+  IdOperadora    Int?
+  NmOperadora    String?
+  ValorDia       Float?
+  QtdFolgas      Int?
+  QtdDiasUteis   Int?
+  Valor          Float?
+  IdEscalas      Int?
+  QtdVale        Int?
+  MemoriaCalculo String?
+  dados          dados?      @relation(fields: [CPF], references: [CPF])
+  escalas        escalas?    @relation(fields: [IdEscalas], references: [Id])
+  operadoras     operadoras? @relation(fields: [IdOperadora], references: [Id])
+  pedidos        pedidos?    @relation(fields: [IdPedido], references: [Id])
+
+  @@index([CPF], name: "CPF")
+  @@index([IdEscalas], name: "IdEscalas")
+  @@index([IdOperadora], name: "IdOperadora")
+  @@index([IdPedido], name: "IdPedido")
+}
+
+model economia {
+  Id          Int       @id @default(autoincrement())
+  IdEmpresa   Int?
+  Competencia String?
+  Valor       Float?
+  empresas    empresas? @relation(fields: [IdEmpresa], references: [Id])
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model solicitacoes {
+  Id                Int       @id @default(autoincrement())
+  Protocolo         String?
+  CPF               String?
+  TipoSolicitacao   String?
+  OrigemSolicitacao String?
+  NrCartao          String?
+  DtSolicitacao     DateTime  @default(now())
+  DtFinalizacao     DateTime?
+  Status            String?   @default("Em Aberto")
+  dados             dados?    @relation(fields: [CPF], references: [CPF])
+
+  @@index([CPF], name: "CPF")
+}

@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model centrodecustos {
+  Id              Int       @id @default(autoincrement())
+  NmCentroDeCusto String?
+  IdEmpresa       Int?
+  Situacao        String?   @default("Ativo")
+  empresas        empresas? @relation(fields: [IdEmpresa], references: [Id])
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model dados {
+  Id              Int         @id @default(autoincrement())
+  NmColaborador   String?
+  CPF             String?     @unique
+  IdEmpresa       Int?
+  DtNascimento    String?
+  IdCentroDeCusto String?
+  Matricula       String?
+  Escala          String?
+  Situacao        String?     @default("Ativo")
+  empresas        empresas?   @relation(fields: [IdEmpresa], references: [Id])
+  passagens       passagens[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model empresas {
+  Id             Int              @id @default(autoincrement())
+  CNPJ           String?          @unique
+  NmEmpresa      String?
+  NmFantasia     String?
+  Endereco       String?
+  CEP            String?
+  Situacao       String?          @default("Ativa")
+  Tipo           String?
+  centrodecustos centrodecustos[]
+  dados          dados[]
+  operadoras     operadoras[]
+}
+
+model operadoras {
+  Id          Int         @id @default(autoincrement())
+  NmOperadora String?
+  IdEmpresa   Int?
+  UF          String?
+  empresas    empresas?   @relation(fields: [IdEmpresa], references: [Id])
+  passagens   passagens[]
+
+  @@index([IdEmpresa], name: "IdEmpresa")
+}
+
+model passagens {
+  Id          Int         @id @default(autoincrement())
+  CPFUsuario  String?
+  NrCartao    String?
+  Valor       Float?
+  IdOperadora Int?
+  QtdDia      Int?
+  dados       dados?      @relation(fields: [CPFUsuario], references: [CPF])
+  operadoras  operadoras? @relation(fields: [IdOperadora], references: [Id])
+
+  @@index([CPFUsuario], name: "CPFUsuario")
+  @@index([IdOperadora], name: "IdOperadora")
+}
+
+model usuarios {
+  Id    Int     @id @default(autoincrement())
+  CPF   String?
+  Nome  String?
+  Senha String?
+  Email String?
+}
