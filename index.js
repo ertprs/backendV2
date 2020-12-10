@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 
 app.use(morgan("dev"));
 app.use(cors());
-app.use(helmet());
+// app.use(helmet());
 
 app.use('/usuarios', usersRoutes);
 app.use('/sessions', sessionsRoutes);
