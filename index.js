@@ -57,4 +57,5 @@ app.use('/notifications', notificationsRoutes);
 // app.use('/colaboradores', colaboradoresRoutes);
 
 app.get('/', (request, response) => response.send('Fala brd!'));
+app.get('/portas', (request, response) => response.send('Fala brd!'));
 app.listen(PORT, () => console.log(`Server Running on port: ${PORT}`));
