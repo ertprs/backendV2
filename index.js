@@ -24,7 +24,7 @@ import pedidosRoutes from './src/routes/pedidos.js';
 import solicitacoesRoutes from './src/routes/solicitacoes.js';
 
 import arquivosRoutes from './src/routes/arquivos.js'
-// import ensureAuthenticated from './src/middlewares/ensureAuthenticated.js'
+import ensureAuthenticated from './src/middlewares/ensureAuthenticated.js'
 import notificationsRoutes from './src/routes/notifications.js'
 
 const app = express();
@@ -36,7 +36,7 @@ app.use(morgan("dev"));
 app.use(cors());
 // app.use(helmet());
 
-app.use('/usuarios', usersRoutes);
+app.use('/usuarios', ensureAuthenticated, usersRoutes);
 app.use('/sessions', sessionsRoutes);
 app.use('/arquivos', arquivosRoutes);
 app.use('/centrodecustos', centrodecustosRoutes);
