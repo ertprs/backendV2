@@ -64,7 +64,7 @@ router.post('/cadastro', async (request, response) => {
     try{
         const { IdPedido, IdEmpresa, DtOcorrenciaInicial, DtOcorrenciaFinal } = request.body; 
 
-        const result = await prisma.$queryRaw`INSERT INTO DetalhePedidos (IdPedido, NmColaborador, CPF, NrCartao, IdOperadora, NmOperadora, 
+        const result = await prisma.$queryRaw`INSERT INTO detalhepedidos (IdPedido, NmColaborador, CPF, NrCartao, IdOperadora, NmOperadora, 
             ValorDia, NmEscala, QtdOcorrencias, QtdFolgas, QtdDias, QtdDiasUteis, Valor, Valor_Total)
             SELECT ${IdPedido}, d.NmColaborador, p.CPF, p.NrCartao, p.IdOperadora, o.NmOperadora, SUM(p.Valor) AS 'Valor Dia', 
             e.NmEscala, Count(oct.Id) AS Ocorrencias, ec.QtdFolgas AS Folgas, p.QtdDia AS 'QtdVezesAoDia', ec.QtdUteis, 
