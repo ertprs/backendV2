@@ -159,7 +159,7 @@ const config = {
     },
     "name": "photon",
     "provider": "prisma-client-js",
-    "output": "D:\\__Mex beneficios\\backendV2\\Prisma\\Studio\\-__Mex beneficios-backendV2",
+    "output": "./node_modules/.prisma/client",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
