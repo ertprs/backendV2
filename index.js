@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-// import path from 'path'; 
+import path from 'path'; 
 
 import helmet from "helmet";
 import morgan from 'morgan'
@@ -30,14 +30,14 @@ import ensureAuthenticated from './src/middlewares/ensureAuthenticated.js'
 import notificationsRoutes from './src/routes/notifications.js'
 
 
-// import { fileURLToPath } from 'url';
-// import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-// const tempFolder = path.resolve(__dirname, 'tmp');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const tempFolder = path.resolve(__dirname, 'tmp');
 
-// console.log(tempFolder);
+console.log(tempFolder);
 
 const app = express();
 const PORT = 5000;
@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(cors());
 // app.use(helmet());
-// app.use('/files', express.static(tempFolder));
+app.use('/files', express.static(tempFolder));
 
 app.use('/usuarios', usersRoutes);
 app.use('/sessions', sessionsRoutes);
