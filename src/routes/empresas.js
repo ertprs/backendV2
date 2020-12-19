@@ -69,8 +69,7 @@ router.post('/deletar/:CNPJ', async (request, response) => {
 });
 
 
-router.post('/', async (request, response) => {
-
+router.post('/cadastro', async (request, response) => {
     try{
         const { NmEmpresa, NmFantasia, CNPJ, Endereco, CEP, Tipo } = request.body;
         const empresas = await prisma.empresas.findOne({ where: { CNPJ: CNPJ } })
